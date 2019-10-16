@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     TextView NW;
     TextView textView;
     Button redDot;
+    Button blueDot;
 
     //Calculate the current clockwise-view angle
     double angleCalculator(int cX, int cY, float X, float Y){
@@ -156,6 +157,20 @@ public class MainActivity extends AppCompatActivity {
         NW = (TextView) findViewById(R.id.NW);
         textView = (TextView) findViewById(R.id.textView);
         redDot = (Button) findViewById(R.id.redDot);
+        blueDot = (Button) findViewById(R.id.blueDot);
+
+        // Reset Button
+        blueDot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restoreLetters();
+                blueDot.setEnabled(false);
+                blueDot.setVisibility(View.GONE);
+                MODE = 0;
+            }
+        });
+
+        // Select Button
         redDot.setOnTouchListener(new View.OnTouchListener(){
             int lastX, lastY; //Save last location
             @Override
@@ -199,10 +214,8 @@ public class MainActivity extends AppCompatActivity {
                         if (MODE == 0) {    // Initialize Input Mode
                             MODE += 1;
                             iniLetters(selection);
-                        }
-                        else {
-                            MODE -=1;
-                            restoreLetters();
+                            blueDot.setEnabled(true);
+                            blueDot.setVisibility(View.VISIBLE);
                         }
                         refreshDisplay(selection);
                         // Toast.makeText(getActivity(), "position：" + left + ", " +

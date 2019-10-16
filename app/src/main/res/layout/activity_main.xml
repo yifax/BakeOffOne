@@ -125,9 +125,20 @@
                 app:srcCompat="@android:color/darker_gray" />
             <Button
                 android:id="@+id/redDot"
-                style="@android:style/Widget.Holo.Button"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:background="#FF3030"
+                app:layout_constraintBottom_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="parent" />
+            <Button
+                android:id="@+id/blueDot"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:visibility="gone"
+                android:enabled="false"
+                android:background="#63B8FF"
                 app:layout_constraintBottom_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
