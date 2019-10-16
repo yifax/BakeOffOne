@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                         lastX = (int) event.getRawX();
                         lastY = (int) event.getRawY();
                         break;
-                    case MotionEvent.ACTION_MOVE: // Move
+                    case MotionEvent.ACTION_MOVE: // Move ////////NEED FIX!!!!!!
                         // Dynamic Location Calculator
                         int dx = (int) event.getRawX() - lastX;
                         int dy = (int) event.getRawY() - lastY;
