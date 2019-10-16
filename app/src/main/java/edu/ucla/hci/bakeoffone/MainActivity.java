@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         if ((112.5 <= ang) && (ang < 157.5)) {    // SE
             return 4;
         }
-        if ((157.5 <= ang) || ( ang > 157.5)) {    // Six
+        if ((157.5 <= ang) || ( ang < -157.5)) {    // Six
             return 5;
         }
         if ((-157.5 <= ang) && (ang < -112.5)) {    // SW
@@ -211,12 +211,6 @@ public class MainActivity extends AppCompatActivity {
                         cX = v.getX() + v.getWidth()  / 2;
                         cY = v.getY() + v.getHeight() / 2;
                         selection = selectionDetect(cX, cY);
-                        if (MODE == 0) {    // Initialize Input Mode
-                            MODE += 1;
-                            iniLetters(selection);
-                            blueDot.setEnabled(true);
-                            blueDot.setVisibility(View.VISIBLE);
-                        }
                         refreshDisplay(selection);
                         // Toast.makeText(getActivity(), "position：" + left + ", " +
                         // top + ", " + right + ", " + bottom, 0)
@@ -226,6 +220,12 @@ public class MainActivity extends AppCompatActivity {
                         //textView.setText("DEBUG #: LEFT:" + left + " TOP:" + top +" x:" + lastX + " y:" + lastY);
                         break;
                     case MotionEvent.ACTION_UP: // Up
+                        if (MODE == 0) {    // Initialize Input Mode
+                            MODE = 1;
+                            iniLetters(selection);
+                            //blueDot.setEnabled(true);
+                            //blueDot.setVisibility(View.VISIBLE);
+                        }
                         // Attach to the border
 //					int dx1 = (int) event.getRawX() - lastX;
 //					int dy1 = (int) event.getRawY() - lastY;
