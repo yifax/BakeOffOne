@@ -134,8 +134,8 @@
                 app:layout_constraintTop_toBottomOf="parent" />
             <Button
                 android:id="@+id/blueDot"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
                 android:visibility="gone"
                 android:enabled="false"
                 android:background="#63B8FF"
