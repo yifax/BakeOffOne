@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 restoreLetters();
                 blueDot.setEnabled(false);
-                blueDot.setVisibility(View.GONE);
+                //blueDot.setVisibility(View.GONE);
                 MODE = 0;
             }
         });
@@ -173,9 +173,9 @@ public class MainActivity extends AppCompatActivity {
         // Select Button
         redDot.setOnTouchListener(new View.OnTouchListener(){
             int lastX, lastY; //Save last location
+            int selection = 0;
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                int selection = 0;
                 float cX, cY;
                 int act = event.getAction();
                 switch(act){
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
                         if (MODE == 0) {    // Initialize Input Mode
                             MODE = 1;
                             iniLetters(selection);
-                            //blueDot.setEnabled(true);
+                            blueDot.setEnabled(true);
                             //blueDot.setVisibility(View.VISIBLE);
                         }
                         // Attach to the border
