@@ -16,7 +16,9 @@ public class MainActivity extends AppCompatActivity {
     int layoutWidth, layoutHeight;
     int centerX;
     int centerY;
-    int MODE = 0;
+    int leftC, topC, bottomC, rightC;
+    int MODE = -1;
+    int SEL = 0;
     TextView Zero;
     TextView NE;
     TextView Three;
@@ -95,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             case 6: SW.setTextSize(scale); SW.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD)); break;
             case 7: Nine.setTextSize(scale); Nine.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD)); break;
             case 8: NW.setTextSize(scale); NW.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD)); break;
-            case 0: Log.i("TAG", "Angle Detection ERROR!");
+            case 0: Log.i("TAG", "No Selection Made");
         }
     }
 
@@ -110,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             case 6: cc = new String[]{"8","9","!","?",",",".","/","-"}; break;
             case 7: cc = new String[]{"U","V","W","X","Y","Z"," "," "}; break;
             case 8: cc = new String[]{"⌴"," "," "," "," "," "," "," "}; break;
-            case 0: Log.i("TAG", "Angle Detection ERROR!");
+            case 0: Log.i("TAG", "iniLetters: ERROR Parameter!");
         }
         Zero.setText(cc[0]);
         NE.setText(cc[1]);
@@ -122,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         NW.setText(cc[7]);
     }
     void restoreLetters(){
-        String[] cc = new String[]{"A-F","<-","G-N","#","O-T","*","U-Z","⌴"};
+        String[] cc = new String[]{"A-F","←","G-N","#","O-T","*","U-Z","⌴"};
         Zero.setText(cc[0]);
         NE.setText(cc[1]);
         Three.setText(cc[2]);
@@ -131,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
         SW.setText(cc[5]);
         Nine.setText(cc[6]);
         NW.setText(cc[7]);
+        refreshDisplay(0);
     }
 
     @Override
@@ -141,6 +144,13 @@ public class MainActivity extends AppCompatActivity {
         layoutHeight = touchArea.getHeight();
         centerX = layoutWidth / 2;
         centerY = layoutHeight / 2;
+        if (MODE == -1) {
+            leftC = redDot.getLeft();
+            topC = redDot.getTop();
+            rightC = redDot.getRight();
+            bottomC = redDot.getBottom();
+            MODE = 0;
+        }
     }
 
     @Override
@@ -163,17 +173,17 @@ public class MainActivity extends AppCompatActivity {
         blueDot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                restoreLetters();
                 blueDot.setEnabled(false);
-                //blueDot.setVisibility(View.GONE);
                 MODE = 0;
+                SEL = 0;
+                redDot.layout(leftC, topC, rightC, bottomC);
+                restoreLetters();
             }
         });
 
         // Select Button
         redDot.setOnTouchListener(new View.OnTouchListener(){
             int lastX, lastY; //Save last location
-            int selection = 0;
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 float cX, cY;
@@ -210,33 +220,32 @@ public class MainActivity extends AppCompatActivity {
                         v.layout(left, top, right, bottom); // Draw new button
                         cX = v.getX() + v.getWidth()  / 2;
                         cY = v.getY() + v.getHeight() / 2;
-                        selection = selectionDetect(cX, cY);
-                        refreshDisplay(selection);
-                        // Toast.makeText(getActivity(), "position：" + left + ", " +
-                        // top + ", " + right + ", " + bottom, 0)
-                        // .show();
+                        SEL = selectionDetect(cX, cY);
+                        refreshDisplay(SEL);
                         lastX = (int) event.getRawX();
                         lastY = (int) event.getRawY();
                         //textView.setText("DEBUG #: LEFT:" + left + " TOP:" + top +" x:" + lastX + " y:" + lastY);
                         break;
                     case MotionEvent.ACTION_UP: // Up
                         if (MODE == 0) {    // Enter Input Mode
-                            if (selection == 2) { // Del Operation
+                            if (SEL == 2) { // Del Operation
                                 String buffer = textView.getText().toString();
                                 textView.setText(buffer.substring(0, buffer.length() - 1));
+                                blueDot.performClick();
                             }
-                            else if (selection == 8) {  // Add Space
+                            else if (SEL == 8) {  // Add Space
                                 textView.setText(textView.getText().toString() + " ");
+                                blueDot.performClick();
                             }
-                            else {
+                            else if (SEL != 0){
                                 MODE = 1;
-                                iniLetters(selection);
+                                iniLetters(SEL);
                                 blueDot.setEnabled(true);
                                 //blueDot.setVisibility(View.VISIBLE);
                             }
                         }
                         else if (MODE == 1) {  // Type in
-                            switch (selection) {
+                            switch (SEL) {
                                 case 1: textView.setText(textView.getText().toString() + Zero.getText()); break;
                                 case 2: textView.setText(textView.getText().toString() + NE.getText()); break;
                                 case 3: textView.setText(textView.getText().toString() + Three.getText()); break;
