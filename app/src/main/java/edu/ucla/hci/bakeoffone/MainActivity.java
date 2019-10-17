@@ -220,11 +220,33 @@ public class MainActivity extends AppCompatActivity {
                         //textView.setText("DEBUG #: LEFT:" + left + " TOP:" + top +" x:" + lastX + " y:" + lastY);
                         break;
                     case MotionEvent.ACTION_UP: // Up
-                        if (MODE == 0) {    // Initialize Input Mode
-                            MODE = 1;
-                            iniLetters(selection);
-                            blueDot.setEnabled(true);
-                            //blueDot.setVisibility(View.VISIBLE);
+                        if (MODE == 0) {    // Enter Input Mode
+                            if (selection == 2) { // Del Operation
+                                String buffer = textView.getText().toString();
+                                textView.setText(buffer.substring(0, buffer.length() - 1));
+                            }
+                            else if (selection == 8) {  // Add Space
+                                textView.setText(textView.getText().toString() + " ");
+                            }
+                            else {
+                                MODE = 1;
+                                iniLetters(selection);
+                                blueDot.setEnabled(true);
+                                //blueDot.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        else if (MODE == 1) {  // Type in
+                            switch (selection) {
+                                case 1: textView.setText(textView.getText().toString() + Zero.getText()); break;
+                                case 2: textView.setText(textView.getText().toString() + NE.getText()); break;
+                                case 3: textView.setText(textView.getText().toString() + Three.getText()); break;
+                                case 4: textView.setText(textView.getText().toString() + SE.getText()); break;
+                                case 5: textView.setText(textView.getText().toString() + Six.getText()); break;
+                                case 6: textView.setText(textView.getText().toString() + SW.getText()); break;
+                                case 7: textView.setText(textView.getText().toString() + Nine.getText()); break;
+                                case 8: textView.setText(textView.getText().toString() + NW.getText()); break;
+                            }
+                            blueDot.performClick();  // Force Reset
                         }
                         // Attach to the border
 //					int dx1 = (int) event.getRawX() - lastX;
