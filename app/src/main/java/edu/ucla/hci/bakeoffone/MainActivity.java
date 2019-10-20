@@ -36,12 +36,11 @@ public class MainActivity extends AppCompatActivity {
     //Calculate the current clockwise-view angle
     double angleCalculator(int cX, int cY, float X, float Y){
         double radius = Math.atan2(X-cX, cY-Y);
-        return radius / (Math.PI / 180);
+        return radius;
     }
 
     // Selection made, generate actual input
-    int selectionDetect(float currentX, float currentY){
-        double ang = angleCalculator(centerX, centerY, currentX, currentY);
+    int selectionDetect(double ang){
         Log.i("TAG", "angle:" + ang);
         if ((-22.5 <= ang) && (ang < 22.5)) {    // Zero
             return 1;
@@ -198,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
         // Select Button
         redDot.setOnTouchListener(new View.OnTouchListener(){
             int lastX, lastY; // Save last location
-            float cX, cY;   // Center Coordinate of redDor
+            float currX, currY;   // Center Coordinate of current joystick view
             double root;
             int newX, newY; // Orbit-Fix Value
             int dx, dy; // Movement Offset Value
@@ -214,36 +213,18 @@ public class MainActivity extends AppCompatActivity {
                         // Dynamic Location Calculator
                         dx = (int) event.getRawX() - lastX;
                         dy = (int) event.getRawY() - lastY;
-                        int left = v.getLeft() + dx;
-                        int top = v.getTop() + dy;
-                        int bottom = v.getBottom() + dy;
-                        int right = v.getRight() + dx;
-                        if (left < 0) {
-                            left = 0;
-                        }
-                        if (right > layoutWidth) {
-                            right = layoutWidth;
-                            left = right - biasX * 2;
-                        }
-                        if (top < 0) {
-                            top = 0;
-                        }
-                        if (bottom > layoutHeight) {
-                            bottom = layoutHeight;
-                            top = bottom - biasY * 2;
-                        }
-                        cX = left + biasX;
-                        cY = top + biasY;
-                        // Fix redDot on a circle orbit
-                        root = Math.sqrt(((cY - centerY) * (cY - centerY) + (cX - centerX) * (cX - centerX)));
-                        newX = (int) (centerX + (((cX - centerX) * limitR) / root));
-                        newY = (int) (centerY + (((cY - centerY) * limitR) / root));
-                        left = newX - biasX;
-                        top = newY - biasY;
-                        right = left + biasX * 2;
-                        bottom = top + biasY * 2;
+                        currX = v.getX() + biasX + dx;
+                        currY = v.getY() + biasY + dy;
+                        double ang = angleCalculator(centerX, centerY, currX, currY);
+                        SEL = selectionDetect(Math.toDegrees(ang));
+                        newX = (int) (centerX + limitR * Math.sin(ang));
+                        newY = (int) (centerY - limitR * Math.cos(ang));
+
+                        int left = newX - biasX;
+                        int right = newX + biasX;
+                        int top = newY - biasY;
+                        int bottom = newY + biasY;
                         v.layout(left, top, right, bottom); // Draw new button
-                        SEL = selectionDetect(cX, cY);
                         refreshDisplay(SEL);
                         lastX = (int) event.getRawX();
                         lastY = (int) event.getRawY();
