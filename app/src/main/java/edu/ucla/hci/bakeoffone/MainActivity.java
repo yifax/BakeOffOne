@@ -4,14 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.lang.Math;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MainActivity extends AppCompatActivity {
     int layoutWidth, layoutHeight, centerX, centerY;   // Center Coordinate of touchArea
@@ -20,17 +21,12 @@ public class MainActivity extends AppCompatActivity {
     int limitR = 120;
     int MODE = -1;
     int SEL = 0;
-    TextView Zero;
-    TextView NE;
-    TextView Three;
-    TextView SE;
-    TextView Six;
-    TextView SW;;
-    TextView Nine;
-    TextView NW;
+    int lastSEL = 0;
+    int CAPSL = 1;
+    String withdrawBuffer = "";
+    TextView Zero, NE, Three, SE, Six, SW, Nine, NW;
     TextView textView;
-    ImageView redDot;
-    ImageView blueDot;
+    ImageView redDot, backSpace, withDraw, clearButton, capsLock;
     ImageView touchArea;
 
     //Calculate the current clockwise-view angle
@@ -103,17 +99,66 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void iniLetters(int selection){
-        String[] cc = new String[]{"X","X","X","X","X","X","X","X"};
-        switch (selection) {
-            case 1: cc = new String[]{"A","B","C","D","E","F"," "," "}; break;
-            case 2: cc = new String[]{"←"," "," "," "," "," "," "," "}; break;
-            case 3: cc = new String[]{"G","H","I","J","K","L","M","N"}; break;
-            case 4: cc = new String[]{"0","1","2","3","4","5","6","7"}; break;
-            case 5: cc = new String[]{"O","P","Q","R","S","T"," "," "}; break;
-            case 6: cc = new String[]{"8","9","!","?",",",".","/","-"}; break;
-            case 7: cc = new String[]{"U","V","W","X","Y","Z"," "," "}; break;
-            case 8: cc = new String[]{"⌴"," "," "," "," "," "," "," "}; break;
-            case 0: Log.i("TAG", "iniLetters: ERROR Parameter!");
+        String[] cc = new String[]{"X","X","X","X","X","X","X","↩"};
+        if (CAPSL == 1) {
+            switch (selection) {
+                case 1:
+                    cc = new String[]{"A", "B", "C", "D", "E", "F", "⌴", "↩"};
+                    break;
+                case 2:
+                    cc = new String[]{"/", "|", "$", ">", "<", "_", "&", "↩"};
+                    break;
+                case 3:
+                    cc = new String[]{"G", "H", "I", "J", "K", "L", "M", "↩"};
+                    break;
+                case 4:
+                    cc = new String[]{"1", "2", "3", "4", "5", "6", "#", "↩"};
+                    break;
+                case 5:
+                    cc = new String[]{"N", "O", "P", "Q", "R", "S", "⌴", "↩"};
+                    break;
+                case 6:
+                    cc = new String[]{"7", "8", "9", "0", ",", ".", "*", "↩"};
+                    break;
+                case 7:
+                    cc = new String[]{"T", "U", "V", "W", "X", "Y", "Z", "↩"};
+                    break;
+                case 8:
+                    cc = new String[]{"?", "!", "-", "~", "&", "(", ")", "↩"};
+                    break;
+                case 0:
+                    Log.i("TAG", "iniLetters: ERROR Parameter!");
+            }
+        }
+        else {
+            switch (selection) {
+                case 1:
+                    cc = new String[]{"a", "b", "c", "d", "e", "f", "⌴", "↩"};
+                    break;
+                case 2:
+                    cc = new String[]{"/", "|", "$", ">", "<", "_", "&", "↩"};
+                    break;
+                case 3:
+                    cc = new String[]{"g", "h", "i", "j", "k", "l", "m", "↩"};
+                    break;
+                case 4:
+                    cc = new String[]{"1", "2", "3", "4", "5", "6", "#", "↩"};
+                    break;
+                case 5:
+                    cc = new String[]{"n", "o", "p", "q", "r", "s", "⌴", "↩"};
+                    break;
+                case 6:
+                    cc = new String[]{"7", "8", "9", "0", ",", ".", "*", "↩"};
+                    break;
+                case 7:
+                    cc = new String[]{"t", "u", "v", "w", "x", "y", "z", "↩"};
+                    break;
+                case 8:
+                    cc = new String[]{"?", "!", "-", "~", "&", "(", ")", "↩"};
+                break;
+                case 0:
+                    Log.i("TAG", "iniLetters: ERROR Parameter!");
+            }
         }
         Zero.setText(cc[0]);
         NE.setText(cc[1]);
@@ -125,7 +170,14 @@ public class MainActivity extends AppCompatActivity {
         NW.setText(cc[7]);
     }
     void restoreLetters(){
-        String[] cc = new String[]{"A-F","←","G-N","#","O-T","*","U-Z","⌴"};
+        String[] cc;
+        if (CAPSL == 1){
+            cc = new String[]{"A-F","$|","G-M","#","N-S","*","T-Z","!?"};
+        }
+        else {
+            cc = new String[]{"a-f","$|","g-m","#","n-s","*","t-z","!?"};
+        }
+
         Zero.setText(cc[0]);
         NE.setText(cc[1]);
         Three.setText(cc[2]);
@@ -135,6 +187,18 @@ public class MainActivity extends AppCompatActivity {
         Nine.setText(cc[6]);
         NW.setText(cc[7]);
         refreshDisplay(0);
+    }
+
+    void centering(){
+        SEL = 0;
+        redDot.layout(leftC, topC, rightC, bottomC);
+        refreshDisplay(SEL);
+    }
+
+    void backUp(){
+        MODE = 0;
+        centering();
+        restoreLetters();
     }
 
     @Override
@@ -170,26 +234,74 @@ public class MainActivity extends AppCompatActivity {
         NW = (TextView) findViewById(R.id.NW);
         textView = (TextView) findViewById(R.id.textView);
         redDot = (ImageView) findViewById(R.id.redDot);
-        blueDot = (ImageView) findViewById(R.id.blueDot);
+        backSpace = (ImageView) findViewById(R.id.backspace);
+        withDraw = (ImageView) findViewById(R.id.withdraw);
+        clearButton = (ImageView) findViewById(R.id.clear);
+        capsLock = (ImageView) findViewById(R.id.capslock);
 
-        // Reset Button
-        blueDot.setOnClickListener(new View.OnClickListener() {
+        // Backspace
+        backSpace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                blueDot.setVisibility(View.INVISIBLE);
-                MODE = 0;
-                SEL = 0;
-                redDot.layout(leftC, topC, rightC, bottomC);
-                restoreLetters();
+                String buffer = textView.getText().toString();
+                withdrawBuffer = buffer;
+                textView.setText(buffer.substring(0, buffer.length() - 1));
+                backUp();
             }
         });
 
-        // Select Button
+        // Withdraw
+        withDraw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!withdrawBuffer.isEmpty()){
+                    textView.setText(withdrawBuffer);
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Withdraw Fail：Empty Buffer.",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // Clear
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                withdrawBuffer = textView.getText().toString();
+                textView.setText("");
+            }
+        });
+
+        // CapsLock
+        capsLock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CAPSL = 1 - CAPSL;
+
+                if (CAPSL == 0) {
+                    Toast.makeText(getApplicationContext(), "Caps Lock On",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Caps Lock Off",Toast.LENGTH_SHORT).show();
+                }
+
+                if (MODE == 0) {
+                    restoreLetters();
+                }
+                else if (MODE == 1) {
+                    iniLetters(lastSEL);
+                }
+                Toast.makeText(getApplicationContext(), "Caps Lock On",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Joystick
         redDot.setOnTouchListener(new View.OnTouchListener(){
             int lastX, lastY; // Save last location
             float currX, currY;   // Center Coordinate of current joystick view
             int newX, newY; // Orbit-Fix Value
             int dx, dy; // Movement Offset Value
+            
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int act = event.getAction();
@@ -213,29 +325,19 @@ public class MainActivity extends AppCompatActivity {
                         int right = newX + biasX;
                         int top = newY - biasY;
                         int bottom = newY + biasY;
-                        v.layout(left, top, right, bottom); // Draw new button
+                        v.layout(left, top, right, bottom); // Draw new button at new location
                         refreshDisplay(SEL);
                         lastX = (int) event.getRawX();
                         lastY = (int) event.getRawY();
                         break;
                     case MotionEvent.ACTION_UP: // Up
-                        if (MODE == 0) {    // Enter Input Mode
-                            if (SEL == 2) { // Del Operation
-                                String buffer = textView.getText().toString();
-                                textView.setText(buffer.substring(0, buffer.length() - 1));
-                                blueDot.performClick();
-                            }
-                            else if (SEL == 8) {  // Add Space
-                                textView.setText(textView.getText().toString() + " ");
-                                blueDot.performClick();
-                            }
-                            else if (SEL != 0){
+                        if ((MODE == 0)&&(SEL != 0)){   // Enter Stage 2
                                 MODE = 1;
+                                lastSEL = SEL;
                                 iniLetters(SEL);
-                                blueDot.setVisibility(View.VISIBLE);
-                            }
+                                centering();
                         }
-                        else if (MODE == 1) {  // Type in
+                        else if (MODE == 1) {  // Type Char
                             switch (SEL) {
                                 case 1: textView.setText(textView.getText().toString() + Zero.getText()); break;
                                 case 2: textView.setText(textView.getText().toString() + NE.getText()); break;
@@ -243,10 +345,17 @@ public class MainActivity extends AppCompatActivity {
                                 case 4: textView.setText(textView.getText().toString() + SE.getText()); break;
                                 case 5: textView.setText(textView.getText().toString() + Six.getText()); break;
                                 case 6: textView.setText(textView.getText().toString() + SW.getText()); break;
-                                case 7: textView.setText(textView.getText().toString() + Nine.getText()); break;
-                                case 8: textView.setText(textView.getText().toString() + NW.getText()); break;
+                                case 7:{
+                                    if (Nine.getText().equals("⌴")) {
+                                        textView.setText(textView.getText().toString() + " "); break;
+                                    }
+                                    else {
+                                        textView.setText(textView.getText().toString() + Nine.getText()); break;
+                                    }
+                                }
+                                case 8: backUp(); break;
                             }
-                            blueDot.performClick();  // Force Reset
+                            centering();
                         }
                 }
                 return true;
