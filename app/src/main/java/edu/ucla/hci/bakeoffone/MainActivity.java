@@ -137,16 +137,6 @@ public class MainActivity extends AppCompatActivity {
         refreshDisplay(0);
     }
 
-    void drawLimitation(View v, float x, float y) {
-        double root = Math.sqrt(((y - centerY) * (y - centerY) + (x - centerX) * (x - centerX)));
-        int newX = (int) (centerX + (((x - centerX) * limitR) / root));
-        int newY = (int) (centerY + (((y - centerY) * limitR) / root));
-        int left = newX - biasX;
-        int top = newY - biasY;
-        int right = left + biasX * 2;
-        int bottom = top + biasY * 2;
-    }
-
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -198,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
         redDot.setOnTouchListener(new View.OnTouchListener(){
             int lastX, lastY; // Save last location
             float currX, currY;   // Center Coordinate of current joystick view
-            double root;
             int newX, newY; // Orbit-Fix Value
             int dx, dy; // Movement Offset Value
             @Override
