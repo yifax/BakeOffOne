@@ -13,10 +13,10 @@ import android.widget.TextView;
 import java.lang.Math;
 
 public class MainActivity extends AppCompatActivity {
-    int layoutWidth, layoutHeight;
-    int centerX;
-    int centerY;
+    int layoutWidth, layoutHeight, centerX, centerY;   // Center Coordinate of touchArea
     int leftC, topC, bottomC, rightC;
+    int biasX, biasY;
+    int limitR = 110;
     int MODE = -1;
     int SEL = 0;
     TextView Zero;
@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     TextView textView;
     Button redDot;
     Button blueDot;
+    ImageView touchArea;
 
     //Calculate the current clockwise-view angle
     double angleCalculator(int cX, int cY, float X, float Y){
@@ -136,14 +137,26 @@ public class MainActivity extends AppCompatActivity {
         refreshDisplay(0);
     }
 
+    void drawLimitation(View v, float x, float y) {
+        double root = Math.sqrt(((y - centerY) * (y - centerY) + (x - centerX) * (x - centerX)));
+        int newX = (int) (centerX + (((x - centerX) * limitR) / root));
+        int newY = (int) (centerY + (((y - centerY) * limitR) / root));
+        int left = newX - biasX;
+        int top = newY - biasY;
+        int right = left + biasX * 2;
+        int bottom = top + biasY * 2;
+    }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        ImageView touchArea = (ImageView) findViewById(R.id.touchArea);
+        touchArea = (ImageView) findViewById(R.id.touchArea);
         layoutWidth = touchArea.getWidth();
         layoutHeight = touchArea.getHeight();
         centerX = layoutWidth / 2;
         centerY = layoutHeight / 2;
+        biasX = redDot.getWidth() / 2;
+        biasY = redDot.getHeight() / 2;
         if (MODE == -1) {
             leftC = redDot.getLeft();
             topC = redDot.getTop();
@@ -183,48 +196,55 @@ public class MainActivity extends AppCompatActivity {
 
         // Select Button
         redDot.setOnTouchListener(new View.OnTouchListener(){
-            int lastX, lastY; //Save last location
+            int lastX, lastY; // Save last location
+            float cX, cY;   // Center Coordinate of redDor
+            double root;
+            int newX, newY; // Orbit-Fix Value
+            int dx, dy; // Movement Offset Value
+            int left, top, right, bottom;
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                float cX, cY;
                 int act = event.getAction();
                 switch(act){
                     case MotionEvent.ACTION_DOWN:
                         lastX = (int) event.getRawX();
                         lastY = (int) event.getRawY();
                         break;
-                    case MotionEvent.ACTION_MOVE: // Move ////////NEED FIX!!!!!!
+                    case MotionEvent.ACTION_MOVE: //
                         // Dynamic Location Calculator
-                        int dx = (int) event.getRawX() - lastX;
-                        int dy = (int) event.getRawY() - lastY;
-                        int left = v.getLeft() + dx;
-                        int top = v.getTop() + dy;
-                        int right = v.getRight() + dx;
-                        int bottom = v.getBottom() + dy;
+                        dx = (int) event.getRawX() - lastX;
+                        dy = (int) event.getRawY() - lastY;
+                        left = v.getLeft() + dx;
+                        top = v.getTop() + dy;
                         if (left < 0) {
                             left = 0;
-                            right = left + v.getWidth();
                         }
                         if (right > layoutWidth) {
                             right = layoutWidth;
-                            left = right - v.getWidth();
+                            left = right - biasX * 2;
                         }
                         if (top < 0) {
                             top = 0;
-                            bottom = top + v.getHeight();
                         }
                         if (bottom > layoutHeight) {
                             bottom = layoutHeight;
-                            top = bottom - v.getHeight();
+                            top = bottom - biasY * 2;
                         }
+                        cX = left + biasX;
+                        cY = top + biasY;
+                        // Fix redDot on a circle orbit
+                        root = Math.sqrt(((cY - centerY) * (cY - centerY) + (cX - centerX) * (cX - centerX)));
+                        newX = (int) (centerX + (((cX - centerX) * limitR) / root));
+                        newY = (int) (centerY + (((cY - centerY) * limitR) / root));
+                        left = newX - biasX;
+                        top = newY - biasY;
+                        right = left + biasX * 2;
+                        bottom = top + biasY * 2;
                         v.layout(left, top, right, bottom); // Draw new button
-                        cX = v.getX() + v.getWidth()  / 2;
-                        cY = v.getY() + v.getHeight() / 2;
                         SEL = selectionDetect(cX, cY);
                         refreshDisplay(SEL);
                         lastX = (int) event.getRawX();
                         lastY = (int) event.getRawY();
-                        //textView.setText("DEBUG #: LEFT:" + left + " TOP:" + top +" x:" + lastX + " y:" + lastY);
                         break;
                     case MotionEvent.ACTION_UP: // Up
                         if (MODE == 0) {    // Enter Input Mode
@@ -257,33 +277,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                             blueDot.performClick();  // Force Reset
                         }
-                        // Attach to the border
-//					int dx1 = (int) event.getRawX() - lastX;
-//					int dy1 = (int) event.getRawY() - lastY;
-//					int left1 = v.getLeft() + dx1;
-//					int top1 = v.getTop() + dy1;
-//					int right1 = v.getRight() + dx1;
-//					int bottom1 = v.getBottom() + dy1;
-//					if (left1 < (screenWidth / 2)) {
-//						if (top1 < 100) {
-//							v.layout(left1, 0, right1, btnHeight);
-//						} else if (bottom1 > (screenHeight - 200)) {
-//							v.layout(left1, (screenHeight - btnHeight), right1, screenHeight);
-//						} else {
-//							v.layout(0, top1, btnHeight, bottom1);
-//						}
-//					} else {
-//						if (top1 < 100) {
-//							v.layout(left1, 0, right1, btnHeight);
-//						} else if (bottom1 > (screenHeight - 200)) {
-//							v.layout(left1, (screenHeight - btnHeight), right1, screenHeight);
-//						} else {
-//							v.layout((screenWidth - btnHeight), top1, screenWidth, bottom1);
-//						}
-//					}
-//					break;
                 }
-                return false;
+                return true;
             }
         });
     }
