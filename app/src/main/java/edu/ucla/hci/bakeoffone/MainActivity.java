@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     int layoutWidth, layoutHeight, centerX, centerY;   // Center Coordinate of touchArea
     int leftC, topC, bottomC, rightC;
     int biasX, biasY;
-    int limitR = 110;
+    int limitR = 120;
     int MODE = -1;
     int SEL = 0;
     TextView Zero;
@@ -28,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
     TextView Nine;
     TextView NW;
     TextView textView;
-    Button redDot;
-    Button blueDot;
+    ImageView redDot;
+    ImageView blueDot;
     ImageView touchArea;
 
     //Calculate the current clockwise-view angle
@@ -179,14 +180,14 @@ public class MainActivity extends AppCompatActivity {
         Nine = (TextView) findViewById(R.id.Nine);
         NW = (TextView) findViewById(R.id.NW);
         textView = (TextView) findViewById(R.id.textView);
-        redDot = (Button) findViewById(R.id.redDot);
-        blueDot = (Button) findViewById(R.id.blueDot);
+        redDot = (ImageView) findViewById(R.id.redDot);
+        blueDot = (ImageView) findViewById(R.id.blueDot);
 
         // Reset Button
         blueDot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                blueDot.setEnabled(false);
+                blueDot.setVisibility(View.INVISIBLE);
                 MODE = 0;
                 SEL = 0;
                 redDot.layout(leftC, topC, rightC, bottomC);
@@ -201,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
             double root;
             int newX, newY; // Orbit-Fix Value
             int dx, dy; // Movement Offset Value
-            int left, top, right, bottom;
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int act = event.getAction();
@@ -214,8 +214,10 @@ public class MainActivity extends AppCompatActivity {
                         // Dynamic Location Calculator
                         dx = (int) event.getRawX() - lastX;
                         dy = (int) event.getRawY() - lastY;
-                        left = v.getLeft() + dx;
-                        top = v.getTop() + dy;
+                        int left = v.getLeft() + dx;
+                        int top = v.getTop() + dy;
+                        int bottom = v.getBottom() + dy;
+                        int right = v.getRight() + dx;
                         if (left < 0) {
                             left = 0;
                         }
@@ -260,8 +262,7 @@ public class MainActivity extends AppCompatActivity {
                             else if (SEL != 0){
                                 MODE = 1;
                                 iniLetters(SEL);
-                                blueDot.setEnabled(true);
-                                //blueDot.setVisibility(View.VISIBLE);
+                                blueDot.setVisibility(View.VISIBLE);
                             }
                         }
                         else if (MODE == 1) {  // Type in
