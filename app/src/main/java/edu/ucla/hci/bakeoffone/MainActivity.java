@@ -301,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
             float currX, currY;   // Center Coordinate of current joystick view
             int newX, newY; // Orbit-Fix Value
             int dx, dy; // Movement Offset Value
-            
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int act = event.getAction();

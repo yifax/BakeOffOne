@@ -33,7 +33,7 @@
             android:id="@+id/NE"
             android:layout_width="wrap_content"
             android:layout_height="5mm"
-            android:text="←"
+            android:text="$|"
             android:textSize="20sp"
             app:layout_constraintHorizontal_bias="0.77"
             app:layout_constraintVertical_bias="0.85"
@@ -99,7 +99,7 @@
             android:id="@+id/NW"
             android:layout_width="wrap_content"
             android:layout_height="5mm"
-            android:text="!#?"
+            android:text="!?"
             android:textSize="20sp"
             app:layout_constraintHorizontal_bias="0.8"
             app:layout_constraintVertical_bias="0.27"
@@ -124,14 +124,33 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:background="@drawable/circle" />
             <ImageView
-                android:id="@+id/blueDot"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
+                android:id="@+id/backspace"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/backspace"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:id="@+id/withdraw"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/withdraw"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+            <ImageView
+                android:id="@+id/clear"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/clear"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+            <ImageView
+                android:id="@+id/capslock"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/capslock"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
             <ImageView
                 android:id="@+id/redDot"
                 android:layout_width="30dp"
