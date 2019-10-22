@@ -10,9 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.lang.Math;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MainActivity extends AppCompatActivity {
     int layoutWidth, layoutHeight, centerX, centerY;   // Center Coordinate of touchArea
@@ -291,7 +289,6 @@ public class MainActivity extends AppCompatActivity {
                 else if (MODE == 1) {
                     iniLetters(lastSEL);
                 }
-                Toast.makeText(getApplicationContext(), "Caps Lock On",Toast.LENGTH_SHORT).show();
             }
         });
 
