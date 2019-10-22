@@ -244,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
                 String buffer = textView.getText().toString();
                 withdrawBuffer = buffer;
                 textView.setText(buffer.substring(0, buffer.length() - 1));
-                backUp();
             }
         });
 

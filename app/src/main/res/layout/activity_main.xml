@@ -9,6 +9,7 @@
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="26dp"
         android:text="  Input will be displayed here..." />
 
     <androidx.constraintlayout.widget.ConstraintLayout
