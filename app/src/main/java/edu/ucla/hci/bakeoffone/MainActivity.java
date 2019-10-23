@@ -243,7 +243,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String buffer = textView.getText().toString();
                 withdrawBuffer = buffer;
-                textView.setText(buffer.substring(0, buffer.length() - 1));
+                if (!buffer.isEmpty()){
+                    textView.setText(buffer.substring(0, buffer.length() - 1));
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Text Area is Empty!",Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -266,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 withdrawBuffer = textView.getText().toString();
                 textView.setText("");
+                Toast.makeText(getApplicationContext(), "All Clear",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -276,10 +283,10 @@ public class MainActivity extends AppCompatActivity {
                 CAPSL = 1 - CAPSL;
 
                 if (CAPSL == 0) {
-                    Toast.makeText(getApplicationContext(), "Caps Lock On",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Caps Lock Off",Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Toast.makeText(getApplicationContext(), "Caps Lock Off",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Caps Lock On",Toast.LENGTH_SHORT).show();
                 }
 
                 if (MODE == 0) {
@@ -296,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
             int lastX, lastY; // Save last location
             float currX, currY;   // Center Coordinate of current joystick view
             int newX, newY; // Orbit-Fix Value
-            int dx, dy; // Movement Offset Value
+            double dx, dy; // Movement Offset Value
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -308,21 +315,25 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case MotionEvent.ACTION_MOVE: //
                         // Dynamic Location Calculator
-                        dx = (int) event.getRawX() - lastX;
-                        dy = (int) event.getRawY() - lastY;
-                        currX = v.getX() + biasX + dx;
-                        currY = v.getY() + biasY + dy;
-                        double ang = angleCalculator(centerX, centerY, currX, currY);
-                        SEL = selectionDetect(Math.toDegrees(ang));
-                        newX = (int) (centerX + limitR * Math.sin(ang));
-                        newY = (int) (centerY - limitR * Math.cos(ang));
+                        dx = event.getRawX() - lastX;
+                        dy = event.getRawY() - lastY;
+                        if ((Math.abs(dx) >= 0.5) && (Math.abs(dy) >= 0.5)) {
+                            currX = (float) (v.getX() + biasX + dx);
+                            currY = (float) (v.getY() + biasY + dy);
+                            double ang = angleCalculator(centerX, centerY, currX, currY);
+                            SEL = selectionDetect(Math.toDegrees(ang));
+                            if (SEL != 0) {
+                                newX = (int) (centerX + limitR * Math.sin(ang));
+                                newY = (int) (centerY - limitR * Math.cos(ang));
 
-                        int left = newX - biasX;
-                        int right = newX + biasX;
-                        int top = newY - biasY;
-                        int bottom = newY + biasY;
-                        v.layout(left, top, right, bottom); // Draw new button at new location
-                        refreshDisplay(SEL);
+                                int left = newX - biasX;
+                                int right = newX + biasX;
+                                int top = newY - biasY;
+                                int bottom = newY + biasY;
+                                v.layout(left, top, right, bottom); // Draw new button at new location
+                                refreshDisplay(SEL);
+                            }
+                        }
                         lastX = (int) event.getRawX();
                         lastY = (int) event.getRawY();
                         break;
